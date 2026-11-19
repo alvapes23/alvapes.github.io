@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PORTFOLIO // Editor de Video & Diseñador Gráfico</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Tipografías Pixel, Monospace y Editorial -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Press+Start+2P&family=Silkscreen:wght@400;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            void: '#0b0b0d',
+            surface: '#141418',
+            card: '#1a1a20',
+            lime: '#c6ff00',
+            electric: '#1f4fff',
+            crimson: '#ff2a3c',
+            cyber: '#ffe600',
+            paper: '#f2f2ee',
+          },
+          fontFamily: {
+            pixel: ['"Silkscreen"', 'monospace'],
+            arcade: ['"Press Start 2P"', 'monospace'],
+            mono: ['"Space Mono"', 'monospace'],
+            sans: ['"Inter"', 'sans-serif'],
+          },
+          boxShadow: {
+            'hard-lime': '5px 5px 0px #c6ff00',
+            'hard-blue': '5px 5px 0px #1f4fff',
+            'hard-red': '5px 5px 0px #ff2a3c',
+            'hard-yellow': '5px 5px 0px #ffe600',
+            'hard-white': '5px 5px 0px #f2f2ee',
+            'hard-dark': '5px 5px 0px #0b0b0d',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Fondo con textura sutil de grilla retro y dithering */
+    body {
+      background-color: #0b0b0d;
+      color: #f2f2ee;
+      background-image: 
+        radial-gradient(rgba(198, 255, 0, 0.08) 1px, transparent 0),
+        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 24px 24px, 48px 48px, 48px 48px;
+      overflow-x: hidden;
+    }
+
+    /* Efecto de brillo pixelado en el título principal */
+    .pixel-glow {
+      text-shadow: 
+        0 0 18px rgba(198, 255, 0, 0.35),
+        4px 4px 0px #1f4fff;
+    }
+
+    /* Patrón de dithering SVG/CSS para acentos visuales */
+    .dither-pattern {
+      background-image: radial-gradient(#0b0b0d 1.5px, transparent 1.5px);
+      background-size: 6px 6px;
+    }
+
+    .dither-light {
+      background-image: radial-gradient(rgba(242, 242, 238, 0.16) 1.5px, transparent 1.5px);
+      background-size: 6px 6px;
+    }
+
+    /* Cinta marquee infinita */
+    @keyframes marquee {
+      0% { transform: translateX(0%); }
+      100% { transform: translateX(-50%); }
+    }
+
+    .animate-marquee {
+      display: flex;
+      width: max-content;
+      animation: marquee 22s linear infinite;
+    }
+
+    .animate-marquee:hover {
+      animation-play-state: paused;
+    }
+
+    /* Transiciones neo-brutalistas */
+    .brutal-card {
+      transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    .brutal-card:hover {
+      transform: translate(-3px, -3px);
+    }
+
+    /* Scrollbar personalizada */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0b0b0d;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #c6ff00;
+    }
+  </style>
+</head>
+<body class="font-sans antialiased selection:bg-lime selection:text-void">
+
+  <!-- BARRA DE NAVEGACIÓN SUPERIOR -->
+  <header class="sticky top-0 z-40 bg-void/90 backdrop-blur-md border-b border-white/15">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+      <!-- Logo / Handle -->
+      <a href="#inicio" class="flex items-center gap-2.5 group">
+        <span class="w-3.5 h-3.5 bg-lime inline-block group-hover:rotate-45 transition-transform"></span>
+        <span id="nav-brand" class="font-pixel text-base sm:text-lg tracking-wider text-paper font-bold">ALVARO</span>
+        <span class="hidden md:inline-block font-mono text-[11px] px-2 py-0.5 bg-white/10 text-lime rounded">V.2026</span>
+      </a>
+
+      <!-- Links de navegación -->
+      <nav class="hidden md:flex items-center gap-6 font-mono text-xs uppercase tracking-widest">
+        <a href="#sobre-mi" class="text-paper/80 hover:text-lime transition-colors">[01. Perfil]</a>
+        <a href="#proyectos" class="text-paper/80 hover:text-lime transition-colors">[02. Trabajos]</a>
+        <a href="#logofolio" class="text-paper/80 hover:text-lime transition-colors">[03. Logofolio]</a>
+        <a href="#contacto" class="text-paper/80 hover:text-lime transition-colors">[04. Contacto]</a>
+      </nav>
+
+      <!-- Botón Personalizar + Contacto rápido -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <button 
+          onclick="toggleCustomizeModal()" 
+          class="font-mono text-xs px-3 py-2 border border-lime/60 text-lime hover:bg-lime hover:text-void transition-colors rounded flex items-center gap-1.5 cursor-pointer"
+          title="Personalizar datos de prueba">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+          <span class="hidden sm:inline">EDITAR DATOS</span>
+        </button>
+
+        <a href="#contacto" class="font-pixel text-xs px-3.5 py-2 bg-lime text-void font-bold rounded hover:bg-cyber transition-colors">
+          HABLEMOS
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- SECCIÓN HERO / PORTADA -->
+  <section id="inicio" class="relative pt-10 pb-16 sm:pt-16 sm:pb-24 px-4 sm:px-6 overflow-hidden">
+    <div class="max-w-7xl mx-auto">
+      
+      <!-- Etiquetas superiores tipo sistema arcade -->
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-6 font-mono text-xs">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="px-2.5 py-1 bg-lime text-void font-bold rounded-sm">[01] EDICIÓN DE VIDEO</span>
+          <span class="px-2.5 py-1 bg-electric text-paper font-bold rounded-sm">[02] DISEÑO GRÁFICO</span>
+          <span class="px-2.5 py-1 bg-crimson text-paper font-bold rounded-sm">[03] SOCIAL & MOTION</span>
+        </div>
+        <div class="flex items-center gap-2 text-paper/70">
+          <span class="w-2.5 h-2.5 rounded-full bg-lime animate-pulse"></span>
+          <span id="hero-status">DISPONIBLE PARA FREELANCE & ESTUDIOS</span>
+        </div>
+      </div>
+
+      <!-- Título Principal Gigante Pixel + Ilustración Pixel/Dither -->
+      <div class="relative border-2 border-white/20 bg-surface/80 rounded-xl p-6 sm:p-10 lg:p-14 overflow-hidden">
+        <!-- Detalle pixelado decorativo esquina superior derecha -->
+        <div class="hidden lg:block absolute top-0 right-0 w-44 h-44 dither-light opacity-60 pointer-events-none"></div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          <div class="lg:col-span-8 z-10">
+            <p class="font-mono text-xs sm:text-sm text-lime mb-3 tracking-widest uppercase">
+              // ARCHIVO CREATIVO SELECCIONADO — 2025/2026
+            </p>
+            <h1 class="font-pixel text-5xl sm:text-7xl lg:text-8xl font-bold tracking-tight text-lime pixel-glow leading-none mb-6">
+              PORTFOLIO
+            </h1>
+            <p id="hero-bio" class="text-base sm:text-xl text-paper/90 max-w-2xl leading-relaxed font-normal mb-8">
+              Combino <span class="text-lime font-semibold">montaje rítmico y retención audiovisual</span> con <span class="text-cyber font-semibold">identidad visual y diseño gráfico</span> para creadores, marcas y proyectos que buscan destacar en pantalla sin verse genéricos.
+            </p>
+
+            <!-- Botones de acción -->
+            <div class="flex flex-wrap items-center gap-4">
+              <a href="#proyectos" class="font-pixel text-sm px-6 py-3.5 bg-lime text-void font-bold rounded shadow-hard-white hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all">
+                EXPLORAR TRABAJOS ↓
+              </a>
+              <a href="#sobre-mi" class="font-mono text-xs sm:text-sm px-5 py-3.5 border border-paper/40 text-paper hover:border-lime hover:text-lime rounded transition-colors">
+                VER FICHA & HERRAMIENTAS
+              </a>
+            </div>
+          </div>
+
+          <!-- Arte Retro Pixel / Dither SVG -->
+          <div class="lg:col-span-4 flex justify-center">
+            <div class="relative w-full max-w-[280px] aspect-square border-2 border-lime bg-void rounded-lg p-3 shadow-hard-lime">
+              <div class="flex items-center justify-between border-b border-white/15 pb-2 mb-2 font-mono text-[10px] text-paper/70">
+                <span>PREVIEW_RENDER.EXE</span>
+                <span class="text-lime">60 FPS</span>
+              </div>
+              <!-- Gráfico SVG estilo pixel/dithering -->
+              <svg viewBox="0 0 160 140" class="w-full h-auto rounded bg-[#101015]">
+                <defs>
+                  <pattern id="smallGrid" width="8" height="8" patternUnits="userSpaceOnUse">
+                    <path d="M 8 0 L 0 0 0 8" fill="none" stroke="rgba(198,255,0,0.12)" stroke-width="0.5"/>
+                  </pattern>
+                </defs>
+                <rect width="160" height="140" fill="url(#smallGrid)" />
+                <circle cx="110" cy="42" r="22" fill="#1f4fff" />
+                <circle cx="110" cy="42" r="14" fill="#c6ff00" />
+                <path d="M20 120 L20 84 L32 84 L32 68 L48 68 L48 52 L68 52 L68 68 L84 68 L84 84 L100 84 L100 100 L124 100 L124 120 Z" fill="#f2f2ee"/>
+                <path d="M28 120 L28 92 L40 92 L40 76 L60 76 L60 92 L76 92 L76 108 L112 108 L112 120 Z" fill="#0b0b0d"/>
+                <rect x="36" y="28" width="6" height="6" fill="#ff2a3c"/>
+                <rect x="48" y="20" width="4" height="4" fill="#ffe600"/>
+                <rect x="132" y="76" width="8" height="8" fill="#c6ff00"/>
+                <rect x="12" y="126" width="136" height="6" fill="#1a1a20" stroke="#c6ff00" stroke-width="1"/>
+                <rect x="14" y="128" width="78" height="2" fill="#c6ff00"/>
+              </svg>
+              <div class="mt-2 flex justify-between items-center font-mono text-[10px] text-paper/60">
+                <span>TIMELINE + LAYOUT</span>
+                <span class="text-cyber">100% CUSTOM</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3 Tarjetas de acceso rápido por rama -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mt-10 pt-8 border-t border-white/15">
+          <!-- Card 1: Video Editing -->
+          <button onclick="jumpAndFilter('video')" class="brutal-card text-left group border-2 border-electric bg-void hover:bg-electric/15 p-5 rounded-lg shadow-hard-blue cursor-pointer">
+            <div class="flex items-center justify-between mb-3">
+              <span class="font-mono text-xs text-electric font-bold">RAMAL // 01</span>
+              <span class="w-8 h-8 rounded bg-electric text-paper flex items-center justify-center font-pixel text-xs">▶</span>
+            </div>
+            <h2 class="font-pixel text-lg sm:text-xl text-paper group-hover:text-lime transition-colors">EDICIÓN DE VIDEO</h2>
+            <p class="text-xs text-paper/70 mt-1.5 font-mono">YouTube, Trailers, Ritmo, Sound Design & Color.</p>
+          </button>
+
+          <!-- Card 2: Graphic Design -->
+          <button onclick="jumpAndFilter('diseno')" class="brutal-card text-left group border-2 border-lime bg-void hover:bg-lime/15 p-5 rounded-lg shadow-hard-lime cursor-pointer">
+            <div class="flex items-center justify-between mb-3">
+              <span class="font-mono text-xs text-lime font-bold">RAMAL // 02</span>
+              <span class="w-8 h-8 rounded bg-lime text-void flex items-center justify-center font-pixel text-xs">✦</span>
+            </div>
+            <h2 class="font-pixel text-lg sm:text-xl text-paper group-hover:text-lime transition-colors">DISEÑO GRÁFICO</h2>
+            <p class="text-xs text-paper/70 mt-1.5 font-mono">Miniaturas, Posters, Branding, Portadas & Logos.</p>
+          </button>
+
+          <!-- Card 3: Social Media -->
+          <button onclick="jumpAndFilter('social')" class="brutal-card text-left group border-2 border-crimson bg-void hover:bg-crimson/15 p-5 rounded-lg shadow-hard-red cursor-pointer">
+            <div class="flex items-center justify-between mb-3">
+              <span class="font-mono text-xs text-crimson font-bold">RAMAL // 03</span>
+              <span class="w-8 h-8 rounded bg-crimson text-paper flex items-center justify-center font-pixel text-xs">⚡</span>
+            </div>
+            <h2 class="font-pixel text-lg sm:text-xl text-paper group-hover:text-cyber transition-colors">SOCIAL & REELS</h2>
+            <p class="text-xs text-paper/70 mt-1.5 font-mono">Shorts verticales, Hooks visuales & Carruseles.</p>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CINTA DIVISORIA ANIMADA (MARQUEE) -->
+  <div class="bg-lime text-void border-y-2 border-void py-2.5 overflow-hidden select-none">
+    <div class="animate-marquee font-pixel text-xs sm:text-sm font-bold tracking-widest uppercase">
+      <span class="mx-4">★ ABOUT THE CREATOR</span>
+      <span class="mx-4">• EDICIÓN DE VIDEO</span>
+      <span class="mx-4">• DISEÑO GRÁFICO</span>
+      <span class="mx-4">• IDENTIDAD VISUAL</span>
+      <span class="mx-4">• MOTION & RITMO</span>
+      <span class="mx-4">★ ABOUT THE CREATOR</span>
+      <span class="mx-4">• EDICIÓN DE VIDEO</span>
+      <span class="mx-4">• DISEÑO GRÁFICO</span>
+      <span class="mx-4">• IDENTIDAD VISUAL</span>
+      <span class="mx-4">• MOTION & RITMO</span>
+    </div>
+  </div>
+
+  <!-- SECCIÓN SOBRE MÍ: CREDENCIAL ID + FICHAS EDITORIALES -->
+  <section id="sobre-mi" class="py-16 sm:py-24 px-4 sm:px-6">
+    <div class="max-w-7xl mx-auto">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
+        <div>
+          <span class="font-mono text-xs text-lime uppercase tracking-widest">// 01. PERFIL & ARSENAL</span>
+          <h2 class="font-pixel text-3xl sm:text-4xl text-paper mt-1">CREATIVE PASS & SKILLS</h2>
+        </div>
+        <p class="font-mono text-xs text-paper/60 max-w-md">
+         ficha rápida: soy alvaro, me dedico a buscar el 100% de potencial para cualquier pieza.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+        
+        <!-- COLUMNA IZQUIERDA: CREDENCIAL TIPO ID CARD -->
+        <div class="lg:col-span-5 bg-paper text-void rounded-xl border-2 border-paper p-5 sm:p-6 shadow-hard-lime flex flex-col justify-between relative overflow-hidden">
+          <div class="flex justify-between items-center border-b-2 border-void/15 pb-3 mb-5">
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 bg-void text-lime font-pixel text-[10px]">CREATIVE ID</span>
+              <span class="font-mono text-xs font-bold text-void/70">2026-AR</span>
+            </div>
+            <span class="font-pixel text-xs bg-crimson text-paper px-2 py-0.5 rounded-sm">VIDEO + GRAPHIC</span>
+          </div>
+
+          <div class="flex flex-col sm:flex-row gap-5 items-center sm:items-start mb-6">
+            <div class="w-28 h-32 shrink-0 bg-void rounded-lg border-2 border-void p-1.5 relative overflow-hidden">
+  <img 
+    src="assets/perfil.jpeg" 
+    alt="Alvaro - Editor de Video y Diseñador Gráfico" 
+    class="w-full h-full object-cover object-center rounded"
+  />
+  <span class="absolute bottom-1 right-1 bg-lime text-void font-mono text-[9px] font-bold px-1">PRO</span>
+</div>
+
+            <div class="text-center sm:text-left">
+              <p class="font-mono text-[11px] uppercase tracking-wider text-void/60">ALVAPES</p>
+              <h3 id="card-name" class="font-pixel text-2xl font-bold text-void leading-tight mb-1">ALVAPES</h3>
+              <p id="card-role" class="font-mono text-xs font-bold text-electric mb-3">Editor de Video & Diseñador Gráfico</p>
+              
+              <div class="space-y-1 font-mono text-xs text-void/80">
+                <p><span class="font-bold">UBICACIÓN:</span> <span id="card-location">Argentina / Remoto Global</span></p>
+                <p><span class="font-bold">IDIOMAS:</span> Español (Nativo) • Inglés (Intermedio/Técnico)</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 pt-4 border-t-2 border-dashed border-void/25 font-mono text-xs">
+            <div class="bg-void/5 p-3 rounded border border-void/15">
+              <span class="block text-[10px] text-void/60 font-bold mb-1">ENFOQUE VIDEO</span>
+              <span class="font-bold text-void">Retención, ritmo, cortes dinámicos, subtítulos y color.</span>
+            </div>
+            <div class="bg-void/5 p-3 rounded border border-void/15">
+              <span class="block text-[10px] text-void/60 font-bold mb-1">ENFOQUE DISEÑO</span>
+              <span class="font-bold text-void">Composición, tipografía, miniaturas CTR e identidad.</span>
+            </div>
+          </div>
+
+          <div class="mt-5 pt-3 border-t border-void/20 flex items-center justify-between">
+            <div class="flex gap-1 h-5 items-end">
+              <span class="w-1 h-5 bg-void"></span>
+              <span class="w-0.5 h-4 bg-void"></span>
+              <span class="w-1.5 h-5 bg-void"></span>
+              <span class="w-0.5 h-5 bg-void"></span>
+              <span class="w-1 h-3 bg-void"></span>
+              <span class="w-2 h-5 bg-void"></span>
+              <span class="w-0.5 h-5 bg-void"></span>
+              <span class="w-1 h-4 bg-void"></span>
+              <span class="w-1.5 h-5 bg-void"></span>
+            </div>
+            <span class="font-mono text-[10px] font-bold text-void/70">VERIFIED CREATIVE PORTFOLIO</span>
+          </div>
+        </div>
+
+        <!-- COLUMNA DERECHA: EXPERIENCIA / PROCESO (Azul) + SOFTWARE / ARSENAL (Amarillo) -->
+        <div class="lg:col-span-7 flex flex-col gap-6">
+          
+          <div class="bg-electric text-paper rounded-xl border-2 border-paper/80 p-6 shadow-hard-white">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="font-pixel text-xl sm:text-2xl text-cyber">EXPERIENCIA & CÓMO TRABAJO</h3>
+              <span class="font-mono text-xs px-2.5 py-1 bg-void/40 rounded">WORKFLOW</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 font-sans text-sm">
+              <div class="bg-void/25 p-4 rounded-lg border border-white/15">
+                <div class="flex justify-between items-center font-mono text-xs text-cyber mb-1">
+                  <span>EDICIÓN AUDIOVISUAL</span>
+                  <span>2023 — PRESENTE</span>
+                </div>
+                <h4 class="font-bold text-base mb-1.5">Creadores de Contenido & Marcas</h4>
+                <ul class="space-y-1 text-paper/90 text-xs leading-relaxed list-disc list-inside">
+                  <li>Edición de videos largos (YouTube) con narrativa y retención.</li>
+                  <li>Reels / TikToks / Shorts con hooks visuales en los primeros 3s.</li>
+                  <li>Diseño sonoro (SFX), música, corrección de color y motion básico.</li>
+                </ul>
+              </div>
+
+              <div class="bg-void/25 p-4 rounded-lg border border-white/15">
+                <div class="flex justify-between items-center font-mono text-xs text-lime mb-1">
+                  <span>DISEÑO GRÁFICO & BRANDING</span>
+                  <span>2022 — PRESENTE</span>
+                </div>
+                <h4 class="font-bold text-base mb-1.5">Identidad Visual & Piezas Digitales</h4>
+                <ul class="space-y-1 text-paper/90 text-xs leading-relaxed list-disc list-inside">
+                  <li>Diseño de miniaturas de alto impacto y portadas musicales/gaming.</li>
+                  <li>Sistemas visuales para redes sociales, flyers y afiches editoriales.</li>
+                  <li>Creación de logotipos y manuales de marca listos para escalar.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-cyber text-void rounded-xl border-2 border-paper p-6 shadow-hard-blue flex-1 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="font-pixel text-xl sm:text-2xl text-void">SOFTWARE & HERRAMIENTAS</h3>
+                <span class="font-mono text-xs font-bold px-2.5 py-1 bg-void text-cyber rounded">STACK</span>
+              </div>
+
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 font-mono text-xs">
+                <div class="bg-void text-paper p-3 rounded-lg flex items-center justify-between">
+                  <span class="font-bold">Premiere Pro</span>
+                  <span class="text-lime text-[10px]">VIDEO</span>
+                </div>
+                <div class="bg-void text-paper p-3 rounded-lg flex items-center justify-between">
+                  <span class="font-bold">DaVinci Resolve</span>
+                  <span class="text-lime text-[10px]">COLOR/CUT</span>
+                </div>
+                <div class="bg-void text-paper p-3 rounded-lg flex items-center justify-between">
+                  <span class="font-bold">After Effects</span>
+                  <span class="text-cyber text-[10px]">MOTION</span>
+                </div>
+                <div class="bg-void text-paper p-3 rounded-lg flex items-center justify-between">
+                  <span class="font-bold">Photoshop</span>
+                  <span class="text-electric text-[10px]">DISEÑO</span>
+                </div>
+                <div class="bg-void text-paper p-3 rounded-lg flex items-center justify-between">
+                  <span class="font-bold">Illustrator</span>
+                  <span class="text-electric text-[10px]">VECTOR</span>
+                </div>
+                <div class="bg-void text-paper p-3 rounded-lg flex items-center justify-between">
+                  <span class="font-bold">Figma / CapCut</span>
+                  <span class="text-crimson text-[10px]">UI/AGILE</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-void/20 flex flex-wrap items-center justify-between gap-2 font-mono text-xs font-bold">
+              <span>SOFT SKILLS: Cumplimiento de entregas • Criterio estético • Comunicación directa</span>
+              <span class="underline">Listo para sumar al equipo</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CINTA DIVISORIA ROJA (VIEW WORKS) -->
+  <div class="bg-crimson text-paper border-y-2 border-paper py-2.5 overflow-hidden select-none">
+    <div class="animate-marquee font-pixel text-xs sm:text-sm font-bold tracking-widest uppercase">
+      <span class="mx-4">→ VIEW WORKS</span>
+      <span class="mx-4">→ PROYECTOS SELECCIONADOS</span>
+      <span class="mx-4">→ EDICIÓN & DISEÑO</span>
+      <span class="mx-4">→ CASOS DE ESTUDIO</span>
+      <span class="mx-4">→ VIEW WORKS</span>
+      <span class="mx-4">→ PROYECTOS SELECCIONADOS</span>
+      <span class="mx-4">→ EDICIÓN & DISEÑO</span>
+      <span class="mx-4">→ CASOS DE ESTUDIO</span>
+    </div>
+  </div>
+
+  <!-- SECCIÓN PROYECTOS CON FILTROS INTERACTIVOS -->
+  <section id="proyectos" class="py-16 sm:py-24 px-4 sm:px-6">
+    <div class="max-w-7xl mx-auto">
+      
+      <!-- Header de Sección + Filtros -->
+      <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-12">
+        <div>
+          <span class="font-mono text-xs text-lime uppercase tracking-widest">// 02. PORTAFOLIO CURADO</span>
+          <h2 class="font-pixel text-3xl sm:text-5xl text-paper mt-1">TRABAJOS DESTACADOS</h2>
+        </div>
+
+        <!-- Botones de Filtro (ajustados para entrar en una sola fila) -->
+        <div class="flex flex-wrap gap-2 font-mono text-xs" role="tablist">
+          <button onclick="filterProjects('todos')" data-filter="todos" class="filter-btn active px-2.5 sm:px-3.5 py-2.5 rounded border-2 border-lime bg-lime text-void font-bold cursor-pointer transition-all whitespace-nowrap">
+            [ TODOS (6) ]
+          </button>
+          <button onclick="filterProjects('video')" data-filter="video" class="filter-btn px-2.5 sm:px-3.5 py-2.5 rounded border-2 border-white/25 bg-surface text-paper hover:border-electric cursor-pointer transition-all whitespace-nowrap">
+            [ EDICIÓN DE VIDEO ]
+          </button>
+          <button onclick="filterProjects('diseno')" data-filter="diseno" class="filter-btn px-2.5 sm:px-3.5 py-2.5 rounded border-2 border-white/25 bg-surface text-paper hover:border-lime cursor-pointer transition-all whitespace-nowrap">
+            [ DISEÑO GRÁFICO ]
+          </button>
+          <button onclick="filterProjects('social')" data-filter="social" class="filter-btn px-2.5 sm:px-3.5 py-2.5 rounded border-2 border-white/25 bg-surface text-paper hover:border-crimson cursor-pointer transition-all whitespace-nowrap">
+            [ SOCIAL & REELS ]
+          </button>
+        </div>
+      </div>
+
+      <!-- GRILLA DE PROYECTOS -->
+      <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7"></div>
+
+    </div>
+  </section>
+
+  <!-- SECCIÓN LOGOFOLIO / MARCAS -->
+ 
+
+  <!-- SECCIÓN CONTACTO / TERMINAL FINAL -->
+  <footer id="contacto" class="py-16 sm:py-24 px-4 sm:px-6 border-t-2 border-lime bg-void">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+        
+        <div class="lg:col-span-7 bg-lime text-void rounded-xl p-6 sm:p-10 border-2 border-paper shadow-hard-white flex flex-col justify-between">
+          <div>
+            <span class="font-mono text-xs font-bold uppercase tracking-widest bg-void text-lime px-2.5 py-1 rounded-sm">
+              // 04. CONTACTO DIRECTO
+            </span>
+            <h2 class="font-pixel text-3xl sm:text-5xl font-bold mt-4 mb-3 leading-none">
+              CONTACTS | SOCIALS
+            </h2>
+            <p class="font-sans text-sm sm:text-base font-medium text-void/85 max-w-xl mb-8">
+              ¿Buscás editor de video, diseñador gráfico o alguien que lleve la estética y el ritmo de tu proyecto? Escribime directo y charlamos.
+            </p>
+          </div>
+
+          <div class="space-y-4 font-mono text-xs sm:text-sm">
+            <div class="bg-void text-paper p-4 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <span class="block text-[10px] text-lime">CORREO ELECTRÓNICO</span>
+                <span id="contact-email" class="font-bold text-sm sm:text-base">alvaroromancuello@gmail.com</span>
+              </div>
+              <button onclick="copyEmail()" class="px-4 py-2 bg-lime text-void font-bold rounded hover:bg-cyber transition-colors cursor-pointer text-xs">
+                COPIAR EMAIL
+              </button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+              <a href="https://www.youtube.com/@alvapes" target="_blank" rel="noopener noreferrer" class="bg-void/10 hover:bg-void hover:text-lime border border-void/30 p-3 rounded-lg font-bold text-center transition-colors">
+                YOUTUBE ↗
+              </a>
+              <a href="https://www.linkedin.com/in/alvaroromancuello" target="_blank" rel="noopener noreferrer" class="bg-void/10 hover:bg-void hover:text-lime border border-void/30 p-3 rounded-lg font-bold text-center transition-colors">
+                LINKEDIN ↗
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-5 bg-surface border-2 border-white/20 rounded-xl p-6 sm:p-8 flex flex-col justify-between">
+          <div>
+            <h3 class="font-pixel text-xl text-paper mb-2">ENVIAR MENSAJE RÁPIDO</h3>
+            <p class="font-mono text-xs text-paper/60 mb-6">Contame qué necesitás (edición mensual, pieza puntual, identidad, etc.).</p>
+
+            <form onsubmit="handleContactSubmit(event)" class="space-y-4">
+              <div>
+                <label class="block font-mono text-xs text-lime mb-1">TU NOMBRE O MARCA</label>
+                <input type="text" required placeholder="Ej. Estudio Norte / Canal Gaming" class="w-full bg-void border border-white/25 focus:border-lime rounded px-3.5 py-2.5 text-sm text-paper outline-none" />
+              </div>
+              <div>
+                <label class="block font-mono text-xs text-lime mb-1">TU EMAIL</label>
+                <input type="email" required placeholder="contacto@ejemplo.com" class="w-full bg-void border border-white/25 focus:border-lime rounded px-3.5 py-2.5 text-sm text-paper outline-none" />
+              </div>
+              <div>
+                <label class="block font-mono text-xs text-lime mb-1">¿QUÉ PROYECTO TENÉS EN MENTE?</label>
+                <textarea rows="3" required placeholder="Necesito editar 4 videos al mes + miniaturas..." class="w-full bg-void border border-white/25 focus:border-lime rounded px-3.5 py-2.5 text-sm text-paper outline-none resize-none"></textarea>
+              </div>
+              <button type="submit" class="w-full font-pixel text-sm py-3.5 bg-electric hover:bg-lime hover:text-void text-paper font-bold rounded transition-colors cursor-pointer">
+                ENVIAR CONSULTA →
+              </button>
+            </form>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="mt-12 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-xs text-paper/50">
+        <p>© 2026 <span id="footer-brand">ALVAPES</span> — PORTFOLIO DE DISEÑO & EDICIÓN DE VIDEO.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL DE CASO DE ESTUDIO / FICHA DEL PROYECTO -->
+  <div id="project-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-void/85 backdrop-blur-sm p-4">
+    <div class="bg-surface border-2 border-lime rounded-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-hard-lime p-6 sm:p-8 relative">
+      <div class="flex items-center justify-between border-b border-white/15 pb-4 mb-6">
+        <div class="flex items-center gap-2">
+          <span id="modal-category-badge" class="font-mono text-xs font-bold px-2.5 py-1 bg-lime text-void rounded-sm">VIDEO</span>
+          <span id="modal-year" class="font-mono text-xs text-paper/60">2024</span>
+        </div>
+        <button onclick="closeProjectModal()" class="font-pixel text-sm px-3 py-1 bg-crimson text-paper rounded hover:opacity-90 cursor-pointer">
+          X CERRAR
+        </button>
+      </div>
+
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+        <h3 id="modal-title" class="font-pixel text-xl sm:text-2xl text-paper">Título del Proyecto</h3>
+        <a id="modal-external-link" href="#" target="_blank" rel="noopener noreferrer" class="font-pixel text-xs px-3.5 py-2 bg-lime text-void font-bold rounded hover:bg-cyber transition-colors shrink-0 text-center">
+          ABRIR PROYECTO ↗
+        </a>
+      </div>
+
+      <!-- Vista previa / reproductor -->
+      <div id="modal-preview-box" class="w-full aspect-video bg-void border border-white/20 rounded-lg mb-6 flex flex-col items-center justify-center p-4 text-center relative overflow-hidden"></div>
+
+      <!-- Ficha técnica del proyecto -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 font-mono text-xs">
+        <div class="bg-void p-3.5 rounded border border-white/15">
+          <span class="block text-lime font-bold mb-1">FORMATO</span>
+          <span id="modal-role" class="text-paper/90">16:9 · YOUTUBE</span>
+        </div>
+        <div class="bg-void p-3.5 rounded border border-white/15">
+          <span class="block text-cyber font-bold mb-1">HERRAMIENTAS</span>
+          <span id="modal-tools" class="text-paper/90">Edición de video</span>
+        </div>
+        <div class="bg-void p-3.5 rounded border border-white/15">
+          <span class="block text-crimson font-bold mb-1">DATO / FORMATO</span>
+          <span id="modal-metric" class="text-paper/90">10:05 min · 18.9K vistas</span>
+        </div>
+      </div>
+
+      <div class="space-y-4 text-sm text-paper/85 leading-relaxed">
+        <div>
+          <h4 class="font-pixel text-sm text-lime mb-1">01. RESUMEN</h4>
+          <p id="modal-challenge">Descripción del proyecto.</p>
+        </div>
+        <div>
+          <h4 class="font-pixel text-sm text-cyber mb-1">02. NOTAS DE EDICIÓN</h4>
+          <p id="modal-solution">Detalles de montaje o enlace.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL PERSONALIZAR DATOS EN VIVO -->
+  <div id="customize-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-void/85 backdrop-blur-sm p-4">
+    <div class="bg-surface border-2 border-cyber rounded-xl max-w-lg w-full p-6 shadow-hard-yellow">
+      <div class="flex items-center justify-between border-b border-white/15 pb-3 mb-4">
+        <h3 class="font-pixel text-lg text-cyber">PERSONALIZAR PORTFOLIO</h3>
+        <button onclick="toggleCustomizeModal()" class="font-mono text-xs px-2.5 py-1 bg-white/10 text-paper rounded cursor-pointer">ESC</button>
+      </div>
+      <p class="font-mono text-xs text-paper/70 mb-4">
+        Probá cómo se ve la web con tu propio nombre, rol y correo antes de bajar el código.
+      </p>
+      <div class="space-y-3 font-mono text-xs">
+        <div>
+          <label class="block text-lime mb-1">TU NOMBRE / HANDLE</label>
+          <input id="input-name" type="text" value="ALVAPES" class="w-full bg-void border border-white/25 rounded px-3 py-2 text-paper" />
+        </div>
+        <div>
+          <label class="block text-lime mb-1">TU TÍTULO / ROL</label>
+          <input id="input-role" type="text" value="Editor de Video & Diseñador Gráfico" class="w-full bg-void border border-white/25 rounded px-3 py-2 text-paper" />
+        </div>
+        <div>
+          <label class="block text-lime mb-1">UBICACIÓN / MODALIDAD</label>
+          <input id="input-location" type="text" value="Argentina / Remoto Global" class="w-full bg-void border border-white/25 rounded px-3 py-2 text-paper" />
+        </div>
+        <div>
+          <label class="block text-lime mb-1">TU EMAIL DE CONTACTO</label>
+          <input id="input-email" type="text" value="alvaroromancuello@gmail.com" class="w-full bg-void border border-white/25 rounded px-3 py-2 text-paper" />
+        </div>
+      </div>
+      <div class="mt-6 flex justify-end gap-3">
+        <button onclick="toggleCustomizeModal()" class="font-mono text-xs px-4 py-2 border border-white/20 text-paper rounded cursor-pointer">Cancelar</button>
+        <button onclick="applyCustomization()" class="font-pixel text-xs px-5 py-2 bg-lime text-void font-bold rounded cursor-pointer">APLICAR CAMBIOS</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST DE NOTIFICACIÓN -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 hidden bg-lime text-void font-mono text-xs font-bold px-4 py-3 rounded-lg border-2 border-void shadow-hard-dark">
+    ¡Acción completada!
+  </div>
+
+  <!-- LÓGICA INTERACTIVA -->
+  <script>
+    const projects = [
+      {
+        id: 1,
+        title: "Reacción Worlds 2024 Anthem (YouTube)",
+        category: "video",
+        formatTag: "16:9 · YOUTUBE",
+        metric: "10:05 min · 18.9K vistas",
+        tools: "Edición de video",
+        year: "2024",
+        summary: "Edición de video para YouTube sobre reacción a 'Heavy Is The Crown ft. Linkin Park'.",
+        tags: ["YouTube", "Gaming"],
+        url: "https://www.youtube.com/watch?v=j2JINM5KkO8",
+        embedUrl: "https://www.youtube.com/embed/j2JINM5KkO8",
+        notes: "Pieza publicada en YouTube. Ajustá acá tu rol exacto, ritmo de cortes y herramientas usadas."
+      },
+      {
+        id: 2,
+        title: "Esperé 10 Años para Esto (YouTube)",
+        category: "video",
+        formatTag: "16:9 · YOUTUBE",
+        metric: "26:03 min · 68K vistas",
+        tools: "Edición de video",
+        year: "2024",
+        summary: "Edición de video largo de charla y comunidad en formato YouTube.",
+        tags: ["YouTube", "Stream"],
+        url: "https://www.youtube.com/watch?v=KvDmgOpeaHM",
+        embedUrl: "https://www.youtube.com/embed/KvDmgOpeaHM",
+        notes: "Pieza publicada en YouTube. Completá acá qué cortes, zooms o ritmo aplicaste en el montaje."
+      },
+      {
+        id: 3,
+        title: "Reacción Still Here Cinematic LoL (YouTube)",
+        category: "video",
+        formatTag: "16:9 · YOUTUBE",
+        metric: "08:00 min · 78.3K vistas",
+        tools: "Edición de video",
+        year: "2024",
+        summary: "Edición de video de reacción a la cinemática 'Still Here' de League of Legends.",
+        tags: ["YouTube", "LoL"],
+        url: "https://www.youtube.com/watch?v=bCJ2E0WXSAo",
+        embedUrl: "https://www.youtube.com/embed/bCJ2E0WXSAo",
+        notes: "Pieza publicada en YouTube. Editá este texto con el enfoque de edición y herramientas que usaste."
+      },
+      {
+        id: 4,
+        title: "Reel Instagram #1",
+        category: "social",
+        formatTag: "9:16 · INSTAGRAM REEL",
+        metric: "Formato vertical",
+        tools: "Edición vertical",
+        year: "2024",
+        summary: "Pieza corta en formato vertical para Instagram Reels.",
+        tags: ["Reels", "Vertical"],
+        url: "https://www.instagram.com/reel/C4lRqhxOQxC/",
+        embedUrl: "",
+        notes: "Instagram no siempre permite embebido directo limpio en local/estático; el botón lleva directo al Reel."
+      },
+      {
+        id: 5,
+        title: "Reel Instagram #2",
+        category: "social",
+        formatTag: "9:16 · INSTAGRAM REEL",
+        metric: "Formato vertical",
+        tools: "Edición vertical",
+        year: "2024",
+        summary: "Pieza corta en formato vertical para Instagram Reels.",
+        tags: ["Reels", "Vertical"],
+        url: "https://www.instagram.com/reel/C4_STB0PyHU/",
+        embedUrl: "",
+        notes: "Link directo al Reel en Instagram. Cambiá el título y los tags por el tema real del clip."
+      },
+      {
+        id: 6,
+        title: "Reel Instagram #3",
+        category: "social",
+        formatTag: "9:16 · INSTAGRAM REEL",
+        metric: "Formato vertical",
+        tools: "Edición vertical",
+        year: "2024",
+        summary: "Pieza corta en formato vertical para Instagram Reels.",
+        tags: ["Reels", "Vertical"],
+        url: "https://www.instagram.com/reel/C5Tpb2bOh5x/",
+        embedUrl: "",
+        notes: "Link directo al Reel en Instagram. Completá acá el título y detalles de edición de esta pieza."
+      }
+    ];
+
+    function getCategoryStyle(category) {
+      if (category === 'video') {
+        return {
+          borderColor: 'border-electric',
+          badgeColor: 'bg-electric text-paper',
+          categoryLabel: 'EDICIÓN DE VIDEO',
+          accent: '#1f4fff',
+          icon: '▶'
+        };
+      }
+      if (category === 'diseno') {
+        return {
+          borderColor: 'border-lime',
+          badgeColor: 'bg-lime text-void',
+          categoryLabel: 'DISEÑO GRÁFICO',
+          accent: '#c6ff00',
+          icon: '✦'
+        };
+      }
+      return {
+        borderColor: 'border-crimson',
+        badgeColor: 'bg-crimson text-paper',
+        categoryLabel: 'SOCIAL & REELS',
+        accent: '#ff2a3c',
+        icon: '⚡'
+      };
+    }
+
+    function renderProjects(filter = 'todos') {
+      const grid = document.getElementById('projects-grid');
+      const filtered = filter === 'todos' 
+        ? projects 
+        : projects.filter(p => p.category === filter);
+
+      grid.innerHTML = filtered.map(project => {
+        const style = getCategoryStyle(project.category);
+        const footerMeta = (project.tags || []).join(' · ');
+
+        return `
+          <article class="brutal-card bg-surface border-2 ${style.borderColor} rounded-xl overflow-hidden flex flex-col justify-between group">
+            <div>
+              <div class="relative aspect-video bg-void p-4 flex flex-col justify-between overflow-hidden border-b border-white/15">
+                <div class="absolute inset-0 dither-light opacity-40"></div>
+                
+                <div class="relative z-10 flex items-center justify-between gap-2">
+                  <span class="font-mono text-[10px] font-bold px-2 py-0.5 rounded-sm ${style.badgeColor}">
+                    ${style.categoryLabel}
+                  </span>
+                  <span class="font-mono text-[10px] text-paper/70 bg-void/80 px-2 py-0.5 rounded">
+                    ${project.formatTag}
+                  </span>
+                </div>
+
+                <div class="relative z-10 my-auto flex flex-col items-center justify-center text-center">
+                  <div class="w-12 h-12 rounded-lg border-2 flex items-center justify-center mb-2 transition-transform group-hover:scale-110" style="border-color: ${style.accent}; background-color: rgba(11,11,13,0.85);">
+                    <span class="font-pixel text-base" style="color: ${style.accent};">
+                      ${style.icon}
+                    </span>
+                  </div>
+                  <span class="font-mono text-[11px] font-bold px-2.5 py-0.5 bg-void/90 text-paper rounded border border-white/10">
+                    ${project.metric}
+                  </span>
+                </div>
+
+                <div class="relative z-10 flex items-center justify-between font-mono text-[10px] text-paper/60">
+                  <span>${project.tools}</span>
+                  <span>${project.year}</span>
+                </div>
+              </div>
+
+              <div class="p-5">
+                <h3 class="font-pixel text-lg text-paper group-hover:text-lime transition-colors mb-2">
+                  ${project.title}
+                </h3>
+                <p class="text-xs sm:text-sm text-paper/75 leading-relaxed mb-4">
+                  ${project.summary}
+                </p>
+              </div>
+            </div>
+
+            <div class="px-5 pb-5 pt-2 flex items-center justify-between gap-2 border-t border-white/10">
+              <span class="font-mono text-[11px] text-paper/60 truncate max-w-[55%]">${footerMeta}</span>
+              <button onclick="openProjectModal(${project.id})" class="font-pixel text-xs px-3 py-1.5 bg-paper text-void hover:bg-lime font-bold rounded transition-colors cursor-pointer shrink-0">
+                VER FICHA →
+              </button>
+            </div>
+          </article>
+        `;
+      }).join('');
+    }
+
+    function filterProjects(category) {
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        if (btn.dataset.filter === category) {
+          btn.classList.add('bg-lime', 'text-void', 'border-lime', 'font-bold');
+          btn.classList.remove('bg-surface', 'text-paper', 'border-white/25');
+        } else {
+          btn.classList.remove('bg-lime', 'text-void', 'border-lime', 'font-bold');
+          btn.classList.add('bg-surface', 'text-paper', 'border-white/25');
+        }
+      });
+      renderProjects(category);
+    }
+
+    function jumpAndFilter(category) {
+      filterProjects(category);
+      document.getElementById('proyectos').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function openProjectModal(id) {
+      const project = projects.find(p => p.id === id);
+      if (!project) return;
+
+      const style = getCategoryStyle(project.category);
+
+      const badge = document.getElementById('modal-category-badge');
+      badge.textContent = style.categoryLabel;
+      badge.className = `font-mono text-xs font-bold px-2.5 py-1 rounded-sm ${style.badgeColor}`;
+
+      document.getElementById('modal-year').textContent = project.year;
+      document.getElementById('modal-title').textContent = project.title;
+
+      const extLink = document.getElementById('modal-external-link');
+      if (project.url) {
+        extLink.href = project.url;
+        extLink.classList.remove('hidden');
+      } else {
+        extLink.classList.add('hidden');
+      }
+
+      document.getElementById('modal-role').textContent = project.formatTag;
+      document.getElementById('modal-tools').textContent = project.tools;
+      document.getElementById('modal-metric').textContent = project.metric;
+      document.getElementById('modal-challenge').textContent = project.summary;
+      document.getElementById('modal-solution').textContent = project.notes;
+
+      const previewBox = document.getElementById('modal-preview-box');
+      if (project.embedUrl) {
+        previewBox.innerHTML = `
+          <iframe 
+            src="${project.embedUrl}" 
+            title="${project.title}" 
+            class="w-full h-full rounded border-0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen>
+          </iframe>
+        `;
+      } else {
+        previewBox.innerHTML = `
+          <div class="absolute inset-0 dither-light opacity-30"></div>
+          <div class="relative z-10 max-w-md">
+            <div class="w-16 h-16 mx-auto mb-3 rounded-xl border-2 flex items-center justify-center" style="border-color: ${style.accent}; background: #141418;">
+              <span class="font-pixel text-2xl" style="color: ${style.accent};">
+                ${style.icon}
+              </span>
+            </div>
+            <p class="font-pixel text-sm text-paper mb-1">${project.formatTag}</p>
+            <p class="font-mono text-xs text-paper/70 mb-3">
+              ${project.summary}
+            </p>
+            ${project.url ? `<a href="${project.url}" target="_blank" rel="noopener noreferrer" class="inline-block font-mono text-xs font-bold underline text-lime">Ver enlace original ↗</a>` : ''}
+          </div>
+        `;
+      }
+
+      const modal = document.getElementById('project-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeProjectModal() {
+      const modal = document.getElementById('project-modal');
+      document.getElementById('modal-preview-box').innerHTML = '';
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function toggleCustomizeModal() {
+      const modal = document.getElementById('customize-modal');
+      modal.classList.toggle('hidden');
+      modal.classList.toggle('flex');
+    }
+
+    function applyCustomization() {
+      const name = document.getElementById('input-name').value.trim() || 'ALVAPES';
+      const role = document.getElementById('input-role').value.trim() || 'Editor de Video & Diseñador Gráfico';
+      const location = document.getElementById('input-location').value.trim() || 'Argentina / Remoto Global';
+      const email = document.getElementById('input-email').value.trim() || 'alvaroromancuello@gmail.com';
+
+      document.getElementById('nav-brand').textContent = name.toUpperCase();
+      document.getElementById('card-name').textContent = name.toUpperCase();
+      document.getElementById('footer-brand').textContent = name.toUpperCase();
+      document.getElementById('card-role').textContent = role;
+      document.getElementById('card-location').textContent = location;
+      document.getElementById('contact-email').textContent = email;
+
+      toggleCustomizeModal();
+      showToast('¡Datos actualizados en la vista previa!');
+    }
+
+    function copyEmail() {
+      const emailText = document.getElementById('contact-email').textContent;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(emailText).catch(() => {});
+      }
+      const tempInput = document.createElement('input');
+      tempInput.value = emailText;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempInput);
+      showToast(`Email copiado: ${emailText}`);
+    }
+
+    function handleContactSubmit(e) {
+      e.preventDefault();
+      e.target.reset();
+      showToast('¡Mensaje enviado! Te responderé a la brevedad.');
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.remove('hidden');
+      setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 3000);
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeProjectModal();
+        const customModal = document.getElementById('customize-modal');
+        if (!customModal.classList.contains('hidden')) toggleCustomizeModal();
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      renderProjects('todos');
+    });
+  </script>
+</body>
+</html>
